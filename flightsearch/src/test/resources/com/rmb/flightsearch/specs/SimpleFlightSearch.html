@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:c="http://www.concordion.org/2007/concordion">
+<head>
+<title>Simple Flight Search</title>
+</head>
+<body>
+
+	<h1>Simple flight search</h1>
+
+	<b>Given</b>
+	<br />
+
+	<ul>
+		<li>airport of origin</li>
+		<li>airport of destination</li>
+		<li>date of departure</li>
+		<li>number of adult, child and infant passengers</li>
+	</ul>
+
+	<b>When</b> you perform the search
+	<br />
+	<br />
+
+	<b>Then</b> you get the list of:
+	<br />
+
+	<ul>
+		<li>flight code matching the route</li>
+		<li>total flight price (for all passengers)</li>
+		<li>date of departure</li>
+		<li>number of adult, child and infant passengers</li>
+	</ul>
+
+	<h2>Business rules and constraints</h2>
+
+	<ul>
+		<li>Search only for direct flights (no stopovers)</li>
+		<li>Assume there is always seat availability</li>
+		<li>All flights leave every day</li>
+		<li>There is only one currency (€)</li>
+	</ul>
+
+	<h2>Pricing rules</h2>
+
+	<h3>Days to departure date</h3>
+	<table>
+		<thead>
+			<tr>
+				<th>days prior to the departure date</th>
+				<th>% of the base price</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>more than 30</td>
+				<td>80%</td>
+			</tr>
+			<tr>
+				<td>30 - 16</td>
+				<td>100%</td>
+			</tr>
+			<tr>
+				<td>15 - 3</td>
+				<td>80%</td>
+			</tr>
+			<tr>
+				<td>less than 3</td>
+				<td>120%</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+	<h3>Passenger type</h3>
+	<table>
+		<thead>
+			<tr>
+				<th>passenger type</th>
+				<th>price</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>adult</td>
+				<td>full price (i.e. price resulting from the *days to departure date* rule)</td>
+			</tr>
+			<tr>
+				<td>child</td>
+				<td>33% discount of the price calculated according to the *days to departure date* rule</td>
+			</tr>
+			<tr>
+				<td>infant</td>
+				<td>fixed price depending on the airline. Rule *days to departure date* is not applied for infants</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h2>Example: Flight from AMS to FRA for 1 adult and 30 days in advance</h2>
+
+	When a user selects
+	<b c:set="#originCity">Amsterdam</b> as airport of origin and selects
+	<b c:set="#destinationCity">Frankfurt</b> as airport of destination, then selects a date of departure of
+	<b c:set="#daysFromNowToDeparture">30 days</b> in advance and just
+	<b c:set="#passengers">1 adult</b>. Then
+	<b c:execute="#locatedFlights = searchFlight(#originCity,#destinationCity,#daysFromNowToDeparture,#passengers)">performs
+		a search</b> and the result should contain the following flights with these prices:
+	<ul>
+		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">TK2372 for 157.6€</li>
+		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">TK2659 for 198.4 €</li>
+		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">LH5909 for 90.4 €</li>
+	</ul>
+
+	<h2>Example: Flight from LHR to IST for 2 adults, 1 child and 1 infant and 15 days in advance</h2>
+
+	When a user selects LHR as airport of origin and selects IST as airport of destination, then selects a date of
+	departure of 15 days in advance for 2 adults, 1 child, 1 infant. Then performs a search and the result should contain
+	the following flights with these prices:
+	<ul>
+		<li>TK2372 for 806 €</li>
+		<li>LH1085 for 481.19 €</li>
+	</ul>
+
+	<h2>Example: Flight from BCN to MAD for 1 adults, 2 children and 2 days in advance</h2>
+
+	When a user selects BCN as airport of origin and selects MAD as airport of destination, then selects a date of
+	departure of 2 days in advance for 1 adults, 2 children. Then performs a search and the result should contain the
+	following flights with these prices:
+	<ul>
+		<li>IB2171 for 909.09 €</li>
+		<li>LH5496 for 1028.43 €</li>
+	</ul>
+
+	<h2>Example: Flight from CDG to FRA</h2>
+
+	When a user selects CDG as airport of origin and selects FRA as airport of destination and completes the search with
+	any passengers or date. Then performs a search and the result should contain no flights and the message "no flights
+	available":
+
+</body>
+</html>
