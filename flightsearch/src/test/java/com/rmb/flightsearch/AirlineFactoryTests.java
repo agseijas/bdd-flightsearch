@@ -13,10 +13,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@Category(value=IntegrationTest.class)
 public class AirlineFactoryTests {
 
     @Test
+    @Category(IntegrationTest.class)
     public void factoryLoadsAllAirlinesWhenAirlinesAreRequired(){
         final AirlineFactory factory = new AirlineFactory();
 
@@ -24,6 +24,7 @@ public class AirlineFactoryTests {
     }
 
     @Test
+    @Category(IntegrationTest.class)
     public void readsAirlinesFromCSVTestFileCorrectly(){
         final AirlineFactory factory = new AirlineFactory();
 
