@@ -3,6 +3,8 @@ package com.rmb.flightsearch;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.rmb.flightsearch.rules.PassengerTypeRule;
+
 public class FlightFinder {
 
     public static AirlineFactory factory = new AirlineFactory();
@@ -15,8 +17,9 @@ public class FlightFinder {
     }
 
     private static Flight createNewflightFromAirlineAndFlightSearchCriteria(final FlightSearchCriteria flightRequest,
-            Airline airline) {
-        return new Flight(airline, flightRequest.getDepartureDate(), flightRequest.getAdults(), flightRequest.getChildren(), flightRequest.getInfants());
+            final Airline airline) {
+        final PassengerTypeRule rules = new PassengerTypeRule();
+        return new Flight(airline, flightRequest.getDepartureDate(), flightRequest.getAdults(), flightRequest.getChildren(), flightRequest.getInfants(), rules);
     }
 
     private static Set<Airline> locateAirlinesFor(final FlightSearchCriteria flightRequest) {
