@@ -48,10 +48,10 @@ public class SimpleFlightSearch {
 
         if(flightDataToAssert != null && flightDataToAssert.length == 2){
             final String airlineNumber = flightDataToAssert[0].trim();
-            final BigDecimal price = new BigDecimal(flightDataToAssert[1].replace("€", "").trim());
+            final BigDecimal price = new BigDecimal(flightDataToAssert[1].replace("EUR", "").trim());
 
             for(final Flight flight : resultsOfSearch.getFlights()){
-                if(flight.getAirline().equals(airlineNumber) && flight.getTotalPrice().compareTo(price) == 0){
+                if(flight.getAirline().getAirlineNumber().equals(airlineNumber) && flight.getTotalPrice().compareTo(price) == 0){
                     return true;
                 }
             }

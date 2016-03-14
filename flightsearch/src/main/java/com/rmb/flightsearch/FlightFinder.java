@@ -3,31 +3,42 @@ package com.rmb.flightsearch;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.rmb.flightsearch.rules.PassengerTypeRule;
+import com.rmb.flightsearch.io.AirlineFactory;
+import com.rmb.flightsearch.rules.PassengerTypesRule;
 
 public class FlightFinder {
 
-    public static AirlineFactory factory = new AirlineFactory();
+    private static AirlineFactory factory = new AirlineFactory();
 
+    /**
+     * Locates the flights for the given criteria.
+     * @param flightRequest
+     * @return
+     */
     public static Set<Flight> locateFlightsFor(final FlightSearchCriteria flightRequest) {
 
         return locateAirlinesFor(flightRequest).stream()
-                .map(airline -> createNewflightFromAirlineAndFlightSearchCriteria(flightRequest, airline))
+                .map(airline -> createNewFlightFromAirlineAndFlightSearchCriteria(flightRequest, airline))
                 .collect(Collectors.toSet());
     }
 
-    private static Flight createNewflightFromAirlineAndFlightSearchCriteria(final FlightSearchCriteria flightRequest,
+    private static Flight createNewFlightFromAirlineAndFlightSearchCriteria(final FlightSearchCriteria flightRequest,
             final Airline airline) {
-        final PassengerTypeRule rules = new PassengerTypeRule();
+        final PassengerTypesRule rules = new PassengerTypesRule();
         return new Flight(airline, flightRequest.getDepartureDate(), flightRequest.getAdults(), flightRequest.getChildren(), flightRequest.getInfants(), rules);
     }
 
     private static Set<Airline> locateAirlinesFor(final FlightSearchCriteria flightRequest) {
 
         return factory.getAirlines().stream()
-                .filter(airline -> airlineAndFlightRequestAreOfEqualOrigin(flightRequest, airline)
-                        && airlineAndFlightRequestAreOfEqualDestination(flightRequest, airline))
+                .filter(airline -> isAirlineSameRouteAsFlightRequest(flightRequest, airline))
                 .collect(Collectors.toSet());
+    }
+
+    private static boolean isAirlineSameRouteAsFlightRequest(final FlightSearchCriteria flightRequest,
+            Airline airline) {
+        return airlineAndFlightRequestAreOfEqualOrigin(flightRequest, airline)
+                && airlineAndFlightRequestAreOfEqualDestination(flightRequest, airline);
     }
 
     private static boolean airlineAndFlightRequestAreOfEqualDestination(final FlightSearchCriteria flightRequest,

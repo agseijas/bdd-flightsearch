@@ -13,7 +13,7 @@ public class Flight{
     private final int infants;
     private final ZonedDateTime departureDate;
 
-    private BigDecimal adultsPrice;
+    private BigDecimal basePrice;
     private BigDecimal childrenPrice;
     private BigDecimal infantsPrice;
 
@@ -27,7 +27,7 @@ public class Flight{
         this.infants = infants;
         this.rules = rules;
 
-        adultsPrice = new BigDecimal(0);
+        basePrice = new BigDecimal(0);
         childrenPrice = new BigDecimal(0);
         infantsPrice = new BigDecimal(0);
     }
@@ -52,8 +52,8 @@ public class Flight{
         return departureDate;
     }
 
-    public void setAdultsPrice(final BigDecimal adultsPrice) {
-        this.adultsPrice = adultsPrice;
+    public void setBasePrice(final BigDecimal basePrice) {
+        this.basePrice = basePrice;
     }
 
     public void setChildrenPrice(final BigDecimal childrenPrice) {
@@ -64,8 +64,8 @@ public class Flight{
         this.infantsPrice = infantsPrice;
     }
 
-    public BigDecimal getAdultsPrice() {
-        return adultsPrice;
+    public BigDecimal getBasePrice() {
+        return basePrice;
     }
 
     public BigDecimal getChildrenPrice() {
@@ -76,11 +76,15 @@ public class Flight{
         return infantsPrice;
     }
 
+    /**
+     * Makes the flight total price calculation by applying the rules given to this flight and by its passengers.
+     * @return
+     */
     public BigDecimal getTotalPrice() {
         rules.apply(this);
-        final BigDecimal adultsPricePerAdult = adultsPrice.multiply(new BigDecimal(getAdults()));
-        final BigDecimal childrenPricePerAdult = childrenPrice.multiply(new BigDecimal(getAdults()));
-        final BigDecimal infantsPricePerAdult = infantsPrice.multiply(new BigDecimal(getAdults()));
+        final BigDecimal adultsPricePerAdult = basePrice.multiply(new BigDecimal(getAdults()));
+        final BigDecimal childrenPricePerAdult = childrenPrice.multiply(new BigDecimal(getChildren()));
+        final BigDecimal infantsPricePerAdult = infantsPrice.multiply(new BigDecimal(getInfants()));
         return adultsPricePerAdult.add(childrenPricePerAdult).add(infantsPricePerAdult);
     }
 

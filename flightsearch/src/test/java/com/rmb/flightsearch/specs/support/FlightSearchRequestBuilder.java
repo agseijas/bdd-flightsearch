@@ -1,13 +1,23 @@
 package com.rmb.flightsearch.specs.support;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.rmb.flightsearch.FlightSearchCriteria;
 
 public class FlightSearchRequestBuilder {
 
     private FlightSearchCriteria request = new FlightSearchCriteria();
+    private static Map<String, String> cities = new HashMap<>();
 
     public FlightSearchRequestBuilder origin(final String originCity) {
         request.setOriginIATA(locateIATACodeBy(originCity));
@@ -61,13 +71,35 @@ public class FlightSearchRequestBuilder {
 
 
     private String locateIATACodeBy(final String cityName) {
-        switch (cityName) {
-            case "Amsterdam":
-                return "AMS";
-            case "Frankfurt":
-                return "FRA";
-            default:
+
+        if(cities.isEmpty()) {
+            loadCities();
         }
+        if(cities.containsKey(cityName)){
+            return cities.get(cityName);
+        }
+
         return "";
+    }
+
+    private synchronized void loadCities() {
+        try (final Stream<String> streamCities = getFilesLineStreamFrom("/cities.csv")) {
+
+            cities = streamCities
+                    .map(cityData -> cityData.split(","))
+                    .collect(
+                            Collectors.toMap(cityData -> cityData[1], cityData -> cityData[0])
+                            );
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException("Unable to load cities");
+        }
+    }
+
+    private Stream<String> getFilesLineStreamFrom(final String filePath) throws IOException, URISyntaxException {
+        return Files.lines(Paths.get(getUriForFilePathResource(filePath)));
+    }
+
+    private URI getUriForFilePathResource(final String filePath) throws URISyntaxException {
+        return getClass().getResource(filePath).toURI();
     }
 }

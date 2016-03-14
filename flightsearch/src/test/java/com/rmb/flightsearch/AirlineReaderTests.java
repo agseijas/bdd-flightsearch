@@ -6,6 +6,8 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import com.rmb.flightsearch.io.AirlinesCSVFileReader;
+import com.rmb.flightsearch.io.AirlinesReader;
 import com.rmb.flightsearch.unit.IntegrationTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -13,22 +15,14 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class AirlineFactoryTests {
-
-    @Test
-    @Category(IntegrationTest.class)
-    public void factoryLoadsAllAirlinesWhenAirlinesAreRequired(){
-        final AirlineFactory factory = new AirlineFactory();
-
-        assertTrue("no airlines were read", factory.getAirlines().size() > 0);
-    }
+public class AirlineReaderTests {
 
     @Test
     @Category(IntegrationTest.class)
     public void readsAirlinesFromCSVTestFileCorrectly(){
-        final AirlineFactory factory = new AirlineFactory();
+        final AirlinesReader reader = new AirlinesCSVFileReader();
 
-        final Set<Airline> airlines = factory.readAirlinesFromFile("/airlines-test.csv");
+        final Set<Airline> airlines = reader.readAirlinesFromIO("/airlines-test.csv", "/infant_prices-test.csv");
 
         assertTrue("some airlines were read", airlines.size() > 0);
 
@@ -37,6 +31,8 @@ public class AirlineFactoryTests {
         assertThat("Contains airline LH6620 correct destination.", airlineToFind.getDestination() , equalTo("CPH"));
         assertThat("Contains airline LH6620 correct origin.", airlineToFind.getOrigin() , equalTo("LHR"));
         assertThat("Contains airline LH6620 correct price.", airlineToFind.getPrice() , equalTo(new BigDecimal("217")));
+        assertThat("Contains airline LH6620 correct infantprice.", airlineToFind.getInfantPrice() , equalTo(new BigDecimal("7")));
+        assertThat("Contains airline LH6620 has company.", airlineToFind.getCompanyName() , equalTo("Lufthansa"));
     }
 
     private Airline getFromAirlinesTheAirlineOfNumber(final String airlineNumber, final Set<Airline> airlines) {
