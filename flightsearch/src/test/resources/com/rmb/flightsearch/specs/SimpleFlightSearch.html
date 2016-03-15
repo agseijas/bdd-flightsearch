@@ -53,19 +53,19 @@
 		<tbody>
 			<tr>
 				<td>more than 30</td>
-				<td>80%</td>
+				<td c:set="#moreThan30Rule">80%</td>
 			</tr>
 			<tr>
 				<td>30 - 16</td>
-				<td>100%</td>
+				<td c:set="#moreThan16Rule">100%</td>
 			</tr>
 			<tr>
 				<td>15 - 3</td>
-				<td>80%</td>
+				<td c:set="#moreThan3Rule">80%</td>
 			</tr>
 			<tr>
 				<td>less than 3</td>
-				<td>120%</td>
+				<td c:set="#lessThan3Rule">120%</td>
 			</tr>
 		</tbody>
 	</table>
@@ -95,46 +95,59 @@
 		</tbody>
 	</table>
 
-	<h2>Example: Flight from AMS to FRA for 1 adult and 30 days in advance</h2>
+	<h2>Example:</h2>
 
 	When a user selects
 	<b c:set="#originCity">Amsterdam</b> as airport of origin and selects
 	<b c:set="#destinationCity">Frankfurt</b> as airport of destination, then selects a date of departure of
-	<b c:set="#daysFromNowToDeparture">31 days</b> in advance and just
+	<b c:set="#daysFromNowToDeparture">31</b> days in advance and just
 	<b c:set="#passengers">1 adult</b>. Then
-	<b c:execute="#locatedFlights = searchFlight(#originCity,#destinationCity,#daysFromNowToDeparture,#passengers)">performs
-		a search</b> and the result should contain the following flights with these prices:
+	<span c:execute="#locatedFlights = searchFlight(#originCity,#destinationCity,#daysFromNowToDeparture,#passengers)">performs
+		a search</span> and the result should contain the following <b c:assertEquals="countLocatedFlights(#locatedFlights)">3</b> flights with these prices:
 	<ul>
 		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">TK2372 for 157.6 EUR</li>
 		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">TK2659 for 198.4 EUR</li>
 		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">LH5909 for 90.4 EUR</li>
 	</ul>
 
-	<h2>Example: Flight from LHR to IST for 2 adults, 1 child and 1 infant and 15 days in advance</h2>
+	<h2>Example:</h2>
 
-	When a user selects LHR as airport of origin and selects IST as airport of destination, then selects a date of
-	departure of 15 days in advance for 2 adults, 1 child, 1 infant. Then performs a search and the result should contain
-	the following flights with these prices:
+	When a user selects
+	<b c:set="#originCity">London</b> as airport of origin and selects 
+	<b c:set="#destinationCity">Istanbul</b> as airport of destination, then selects a date of departure of
+	<b c:set="#daysFromNowToDeparture">15</b> days in advance for
+	<b c:set="#passengers">2 adults, 1 child, 1 infant</b>. Then
+	<span c:execute="#locatedFlights = searchFlight(#originCity,#destinationCity,#daysFromNowToDeparture,#passengers)">performs
+		a search</span> and the result should contain the following <b c:assertEquals="countLocatedFlights(#locatedFlights)">2</b> flights with these prices:
 	<ul>
-		<li>TK2372 for 806 EUR</li>
-		<li>LH1085 for 481.19 EUR</li>
+		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">TK8891 for 806 EUR</li>
+		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">LH1085 for 481.19 EUR</li>
 	</ul>
 
-	<h2>Example: Flight from BCN to MAD for 1 adults, 2 children and 2 days in advance</h2>
+	<h2>Example:</h2>
 
-	When a user selects BCN as airport of origin and selects MAD as airport of destination, then selects a date of
-	departure of 2 days in advance for 1 adults, 2 children. Then performs a search and the result should contain the
-	following flights with these prices:
+	When a user selects
+	<b c:set="#originCity">Barcelona</b> as airport of origin and selects 
+	<b c:set="#destinationCity">Madrid</b> as airport of destination, then selects a date of departure of
+	<b c:set="#daysFromNowToDeparture">2</b> days in advance for
+	<b c:set="#passengers">1 adult, 2 children</b>. Then
+	<span c:execute="#locatedFlights = searchFlight(#originCity,#destinationCity,#daysFromNowToDeparture,#passengers)">performs
+		a search</span> and the result should contain the following <b c:assertEquals="countLocatedFlights(#locatedFlights)">2</b> flights with these prices:
 	<ul>
-		<li>IB2171 for 909.09 EUR</li>
-		<li>LH5496 for 1028.43 EUR</li>
+		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">IB2171 for 909.09 EUR</li>
+		<li c:assertTrue="hasThisAirLineWithThePriceIn(#locatedFlights, #TEXT)">LH5496 for 1028.43 EUR</li>
 	</ul>
 
-	<h2>Example: Flight from CDG to FRA</h2>
+	<h2>Example:</h2>
 
-	When a user selects CDG as airport of origin and selects FRA as airport of destination and completes the search with
-	any passengers or date. Then performs a search and the result should contain no flights and the message "no flights
-	available":
+	When a user selects
+	<b c:set="#originCity">Paris</b> as airport of origin and selects 
+	<b c:set="#destinationCity">Frankfurt</b> as airport of destination, then selects a date of departure of
+	<b c:set="#daysFromNowToDeparture">20</b> days in advance for
+	<b c:set="#passengers">1 adult</b>. Then
+	<span c:execute="#locatedFlights = searchFlight(#originCity,#destinationCity,#daysFromNowToDeparture,#passengers)">performs
+		a search</span> and the result should contain  
+		<b c:assertEquals="hasNoFlights(#locatedFlights, #TEXT)">no flights</b>
 
 </body>
 </html>

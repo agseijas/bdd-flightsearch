@@ -31,12 +31,12 @@ public class FlightSearchRequestBuilder {
 
     /**
      * Calculates a day from now to the specified days and sets that as the departure date for this flight search request to be built.<br/>
-     * Ex: If we're at 01/01/2016 and we pass the string "30 days" then adds 30 days and sets on the request to build the date 31/01/2016.
+     * Ex: If we're at 01/01/2016 and we pass the string "30" then adds 30 days and sets on the request to build the date 31/01/2016.
      * @param daysFromNow in the format "X days"
      * @return
      */
     public FlightSearchRequestBuilder departure(final String daysFromNow) {
-        final long days = Long.parseLong(daysFromNow.substring(0,daysFromNow.indexOf(" days")));
+        final long days = Long.parseLong(daysFromNow);
         final ZonedDateTime departureDate = ZonedDateTime.now().plus(days, ChronoUnit.DAYS);
         request.setDepartureDate(departureDate);
         return this;
@@ -47,16 +47,20 @@ public class FlightSearchRequestBuilder {
         final String child = "child";
         final String infant = "infant";
 
-        for(final String passengerNumberAndType: passengers.split(",")){
+        for(final String passengerNumberAndType : preparePassengersTypes(passengers)){
             if(passengerNumberAndType.contains(adult)){
                 request.setAdults(Integer.parseInt(getNumberOfPassengerForType(adult, passengerNumberAndType)));
             } else if(passengerNumberAndType.contains(child)){
                 request.setChildren(Integer.parseInt(getNumberOfPassengerForType(child, passengerNumberAndType)));
             } else if(passengerNumberAndType.contains(infant)){
-                request.setChildren(Integer.parseInt(getNumberOfPassengerForType(infant, passengerNumberAndType)));
+                request.setInfants(Integer.parseInt(getNumberOfPassengerForType(infant, passengerNumberAndType)));
             }
         }
         return this;
+    }
+
+    private String[] preparePassengersTypes(final String passengers) {
+        return passengers.replace(" and ", ", ").split(",");
     }
 
     private String getNumberOfPassengerForType(final String adult, final String passengerType) {
