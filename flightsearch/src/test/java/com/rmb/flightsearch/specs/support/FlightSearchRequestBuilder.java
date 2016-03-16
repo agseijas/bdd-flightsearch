@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.rmb.flightsearch.FSException;
 import com.rmb.flightsearch.FlightSearchCriteria;
 
 public class FlightSearchRequestBuilder {
@@ -30,9 +31,13 @@ public class FlightSearchRequestBuilder {
     }
 
     /**
-     * Calculates a day from now to the specified days and sets that as the departure date for this flight search request to be built.<br/>
-     * Ex: If we're at 01/01/2016 and we pass the string "30" then adds 30 days and sets on the request to build the date 31/01/2016.
-     * @param daysFromNow in the format "X days"
+     * Calculates a day from now to the specified days and sets that as the
+     * departure date for this flight search request to be built.<br/>
+     * Ex: If we're at 01/01/2016 and we pass the string "30" then adds 30 days
+     * and sets on the request to build the date 31/01/2016.
+     * 
+     * @param daysFromNow
+     *            in the format "X days"
      * @return
      */
     public FlightSearchRequestBuilder departure(final String daysFromNow) {
@@ -47,12 +52,12 @@ public class FlightSearchRequestBuilder {
         final String child = "child";
         final String infant = "infant";
 
-        for(final String passengerNumberAndType : preparePassengersTypes(passengers)){
-            if(passengerNumberAndType.contains(adult)){
+        for (final String passengerNumberAndType : preparePassengersTypes(passengers)) {
+            if (passengerNumberAndType.contains(adult)) {
                 request.setAdults(Integer.parseInt(getNumberOfPassengerForType(adult, passengerNumberAndType)));
-            } else if(passengerNumberAndType.contains(child)){
+            } else if (passengerNumberAndType.contains(child)) {
                 request.setChildren(Integer.parseInt(getNumberOfPassengerForType(child, passengerNumberAndType)));
-            } else if(passengerNumberAndType.contains(infant)){
+            } else if (passengerNumberAndType.contains(infant)) {
                 request.setInfants(Integer.parseInt(getNumberOfPassengerForType(infant, passengerNumberAndType)));
             }
         }
@@ -73,13 +78,12 @@ public class FlightSearchRequestBuilder {
         return buildRequest;
     }
 
-
     private String locateIATACodeBy(final String cityName) {
 
-        if(cities.isEmpty()) {
+        if (cities.isEmpty()) {
             loadCities();
         }
-        if(cities.containsKey(cityName)){
+        if (cities.containsKey(cityName)) {
             return cities.get(cityName);
         }
 
@@ -89,13 +93,10 @@ public class FlightSearchRequestBuilder {
     private synchronized void loadCities() {
         try (final Stream<String> streamCities = getFilesLineStreamFrom("/cities.csv")) {
 
-            cities = streamCities
-                    .map(cityData -> cityData.split(","))
-                    .collect(
-                            Collectors.toMap(cityData -> cityData[1], cityData -> cityData[0])
-                            );
+            cities = streamCities.map(cityData -> cityData.split(","))
+                    .collect(Collectors.toMap(cityData -> cityData[1], cityData -> cityData[0]));
         } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException("Unable to load cities");
+            throw FSException.withMessage("Unable to load cities");
         }
     }
 

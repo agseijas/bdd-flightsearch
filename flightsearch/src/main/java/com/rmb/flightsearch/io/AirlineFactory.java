@@ -6,8 +6,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.rmb.flightsearch.Airline;
+import com.rmb.flightsearch.FSException;
 
-public class AirlineFactory{
+public class AirlineFactory {
 
     private static Set<Airline> airlines = new HashSet<>();
 
@@ -16,11 +17,12 @@ public class AirlineFactory{
 
     /**
      * Gets a Set of Airline from I/O and cache's the first access result.
+     * 
      * @return
      */
-    public Set<Airline> getAirlines(){
+    public Set<Airline> getAirlines() {
 
-        if(airlines.isEmpty()){
+        if (airlines.isEmpty()) {
             loadInterlockingAirlines();
         }
 
@@ -33,12 +35,12 @@ public class AirlineFactory{
 
         try {
             lock.tryLock(5, TimeUnit.SECONDS);
-            if(airlines.size() == 0){
+            if (airlines.size() == 0) {
                 airlines = new AirlinesCSVFileReader().readAirlinesFromIO("/airlines.csv", "/infant_prices.csv");
             }
 
         } catch (final InterruptedException e) {
-            throw new RuntimeException("Unable to load airlines correctly.");
+            throw FSException.withMessage("Unable to load airlines correctly.");
         } finally {
             lock.unlock();
         }

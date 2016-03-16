@@ -3,7 +3,7 @@ package com.rmb.flightsearch;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
-import com.rmb.flightsearch.rules.PassengerPriceRule;
+import com.rmb.flightsearch.rules.FlightSearchRule;
 
 public class Flight{
 
@@ -17,9 +17,9 @@ public class Flight{
     private BigDecimal childrenPrice;
     private BigDecimal infantsPrice;
 
-    private final PassengerPriceRule rules;
+    private final FlightSearchRule rules;
 
-    public Flight(final Airline airline, final ZonedDateTime departureDate, final int adults, final int children, final int infants, final PassengerPriceRule rules) {
+    public Flight(final Airline airline, final ZonedDateTime departureDate, final int adults, final int children, final int infants, final FlightSearchRule rules) {
         this.airline = airline;
         this.departureDate = departureDate;
         this.adults = adults;

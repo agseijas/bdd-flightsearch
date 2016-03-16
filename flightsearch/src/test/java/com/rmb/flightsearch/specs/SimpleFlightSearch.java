@@ -17,15 +17,13 @@ import com.rmb.flightsearch.specs.support.ResultOfFlightSearch;
 @RunWith(ConcordionRunner.class)
 public class SimpleFlightSearch {
 
+    private final FlightFinder finder = new FlightFinder();
+
     public ResultOfFlightSearch searchFlight(final String originCity, final String destinationCity,
             final String daysFromNowToDeparture, final String passengers) {
 
-        final FlightSearchCriteria flightRequest = new FlightSearchRequestBuilder()
-                .origin(originCity)
-                .destination(destinationCity)
-                .departure(daysFromNowToDeparture)
-                .passengers(passengers)
-                .build();
+        final FlightSearchCriteria flightRequest = new FlightSearchRequestBuilder().origin(originCity)
+                .destination(destinationCity).departure(daysFromNowToDeparture).passengers(passengers).build();
 
         Logger.reportFlightSearch(flightRequest);
 
@@ -34,26 +32,27 @@ public class SimpleFlightSearch {
 
     private ResultOfFlightSearch performSearchFor(final FlightSearchCriteria flightRequest) {
 
-        final Set<Flight> flights = FlightFinder.locateFlightsFor(flightRequest);
+        final Set<Flight> flights = finder.locateFlightsFor(flightRequest);
 
         final ResultOfFlightSearch results = new ResultOfFlightSearch(flights);
 
         return results;
     }
 
-    public boolean hasThisAirLineWithThePriceIn(final ResultOfFlightSearch resultsOfSearch, final String flightDescription) {
+    public boolean hasThisAirLineWithThePriceIn(final ResultOfFlightSearch resultsOfSearch,
+            final String flightDescription) {
 
         final String[] flightDataToAssert = flightDescription.split(" for ");
 
-        if(flightDataToAssert != null && flightDataToAssert.length == 2){
+        if (flightDataToAssert != null && flightDataToAssert.length == 2) {
             final String airlineNumber = flightDataToAssert[0].trim();
             final BigDecimal price = new BigDecimal(flightDataToAssert[1].replace("EUR", "").trim());
 
-            for(final Flight flight : resultsOfSearch.getFlights()){
-                if(flight.getAirline().getAirlineNumber().equals(airlineNumber) ){
+            for (final Flight flight : resultsOfSearch.getFlights()) {
+                if (flight.getAirline().getAirlineNumber().equals(airlineNumber)) {
                     Logger.report("Found flight: " + airlineNumber);
                     final BigDecimal scaledPrice = flightPricewithJustTwoDecimalsRoundingHalfUp(flight);
-                    if(scaledPrice.compareTo(price) == 0){
+                    if (scaledPrice.compareTo(price) == 0) {
                         Logger.report("Found flight (" + airlineNumber + ") price: " + price);
                         return true;
                     } else {
@@ -69,17 +68,16 @@ public class SimpleFlightSearch {
         return flight.getTotalPrice().setScale(2, RoundingMode.HALF_UP);
     }
 
-    public String countLocatedFlights(final ResultOfFlightSearch resultsOfSearch){
+    public String countLocatedFlights(final ResultOfFlightSearch resultsOfSearch) {
         return Integer.toString(resultsOfSearch.getFlights().size());
     }
 
-    public String hasNoFlights(final ResultOfFlightSearch resultsOfSearch, final String noFoundFlightMessage){
+    public String hasNoFlights(final ResultOfFlightSearch resultsOfSearch, final String noFoundFlightMessage) {
         final int foundFlightsCount = resultsOfSearch.getFlights().size();
 
-        if(foundFlightsCount == 0){
+        if (foundFlightsCount == 0) {
             return noFoundFlightMessage;
         }
         return "Some flights were found.";
     }
-
 }
